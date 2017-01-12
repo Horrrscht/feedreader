@@ -2,13 +2,14 @@
 
 from xml.dom import minidom
 import json
+import sys
 
 def xmlValue(root, tagname):
     item = root.getElementsByTagName(tagname)
     if not item:
         return None
-    if item == None:
-        return None
+    #if item == None:
+    #    return None
     return item[0].firstChild.wholeText
 
 def channelInfo(channelRoot):
@@ -23,16 +24,18 @@ def itemInfo(itemRoot):
             "guid":xmlValue(itemRoot, "guid")
             }
 
-root = minidom.parse("testdata/ardtest")
+def rss2dict(rssFile):
+    root = minidom.parse(rssFile)
+    rssRoot = root.getElementsByTagName("rss")[0]
+    channelRoot = rssRoot.getElementsByTagName("channel")[0]
+    info = channelInfo(channelRoot)
+    items = channelRoot.getElementsByTagName("item")
+    itemInfos = [itemInfo(item) for item in items] 
+    return {"channelInfo":info,"items":itemInfos}
 
-rssRoot = root.getElementsByTagName("rss")[0]
-channelRoot = rssRoot.getElementsByTagName("channel")[0]
 
-info = channelInfo(channelRoot)
-items = channelRoot.getElementsByTagName("item")
-itemInfos = [itemInfo(item) for item in items] 
-feedContent = {"channelInfo":info,"items":itemInfos}
+def dict2json(inputDict):
+    return json.dumps(inputDict, indent=4, separators=(",",":"))
 
-#print(json.dumps(info, indent=4, separators=(",",":")))
-#print(json.dumps(itemInfos, indent=4, separators=(",",":")))
-print(json.dumps(feedContent, indent=4, separators=(",",":")))
+print(dict2json(rss2dict(sys.argv[1])))
+
