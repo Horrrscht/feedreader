@@ -26,7 +26,7 @@ def itemInfo(itemRoot):
 
 def rss2dict(rssFile):
     root = minidom.parse(rssFile)
-    rssRoot = root.getElementsByTagName("rss")[0]
+    rssRoot = root.getElementsByTagName("rss")[0] #TODO: Check if it's proper rss
     channelRoot = rssRoot.getElementsByTagName("channel")[0]
     info = channelInfo(channelRoot)
     items = channelRoot.getElementsByTagName("item")
