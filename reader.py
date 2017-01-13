@@ -20,7 +20,7 @@ http://www.ard.de/home/ard/Medienkompetenz/76910/index.html
 feeds = ["Hello", "World", "Bla", "Blubb", "Wurst", "Kaese", "Quark"]
 
 def main(stdscr):
-    feedWindowHeight = 15
+    feedWindowHeight = 10
     feedListHeight = 5
     selectedFeed = 0
     feedOffset = 0
@@ -32,7 +32,6 @@ def main(stdscr):
 
     stdscr.addstr(0, 0, "Welcome to my super-awesome feedreader")
 
-    # feedListWin = curses.newwin(feedListDims[2], feedListDims[3], feedListDims[0], feedListDims[1])
     feedListWin = curses.newpad(feedListDims[2], feedListDims[3])
     feedContentWin = curses.newpad(feedContentDims[2], feedContentDims[3])
     activeWin = feedContentWin
@@ -42,21 +41,15 @@ def main(stdscr):
     rectangle(stdscr, feedContentDims[0]- 1, feedContentDims[1] - 1, feedContentDims[0] + feedWindowHeight + 1,
               feedContentDims[1] + feedContentDims[3] + 1)
 
-    stdscr.move(2, 28)
+    stdscr.move(2, feedListDims[3] + 4)
     for line in range(0, len(keyBindTexts)):
         stdscr.addstr(keyBindTexts[line])
-        stdscr.move(3 + line, 28)
+        stdscr.move(3 + line, feedListDims[3] + 4)
 
     ch = ""
     while (ch != "q"):
         stdscr.refresh()
         feedListWin.move(0, 0)
-        #        for line in range(0, feedListDims[2] if len(feeds) > feedListDims[2] else len(feeds)):
-        #            feedListWin.move(line, 0)
-        #            if line + feedOffset == selectedFeed:
-        #                feedListWin.addnstr(feeds[feedOffset:][line], feedListDims[3], curses.A_STANDOUT)
-        #            else:
-        #                feedListWin.addnstr(feeds[feedOffset:][line], feedListDims[3])
         for line in range(0, len(feeds)):
             feedListWin.move(line, 0)
             if line == selectedFeed:
@@ -75,12 +68,8 @@ def main(stdscr):
 
         if ch == "KEY_LEFT" and activeWin == feedContentWin:
             activeWin = feedListWin
-            feedListWin.move(0, 0)
-            curses.curs_set(0)
         elif ch == "KEY_RIGHT" and activeWin == feedListWin:
             activeWin = feedContentWin
-            feedContentWin.move(0, 0)
-            curses.curs_set(2)
         elif ch == "KEY_UP" and activeWin == feedListWin and selectedFeed > 0:
             selectedFeed -= 1
             if feedOffset > 0:
