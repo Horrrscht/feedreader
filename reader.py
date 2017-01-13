@@ -18,26 +18,28 @@ http://www.ard.de/home/ard/Medienkompetenz/76910/index.html
 """
 
 feeds = ["Hello", "World", "Bla", "Blubb", "Wurst", "Kaese", "Quark"]
-feedListDims = (2, 1, 6, 25)  # y,x,height,width
-feedContentDims = (
-    feedListDims[0] + feedListDims[2] + 3, 1, 50, 66)  # TODO: Set dimensions dynamically according to terminal size
-
 
 def main(stdscr):
     feedWindowHeight = 15
+    feedListHeight = 5
     selectedFeed = 0
     feedOffset = 0
     textLine = 0
+
+    feedListDims = (2, 1, 20, 25)  # y,x,height,width
+    feedContentDims = (
+        feedListDims[0] + feedListHeight + 3, 1, 50, 66)  # TODO: Set dimensions dynamically according to terminal size
+
     stdscr.addstr(0, 0, "Welcome to my super-awesome feedreader")
 
-    feedListWin = curses.newwin(feedListDims[2], feedListDims[3], feedListDims[0], feedListDims[1])
-    #feedContentWin = curses.newwin(feedContentDims[2], feedContentDims[3], feedContentDims[0], feedContentDims[1])
+    # feedListWin = curses.newwin(feedListDims[2], feedListDims[3], feedListDims[0], feedListDims[1])
+    feedListWin = curses.newpad(feedListDims[2], feedListDims[3])
     feedContentWin = curses.newpad(feedContentDims[2], feedContentDims[3])
     activeWin = feedContentWin
 
-    rectangle(stdscr, feedListDims[0] - 1, feedListDims[1] - 1, feedListDims[0] + feedListDims[2],
+    rectangle(stdscr, feedListDims[0] - 1, feedListDims[1] - 1, feedListDims[0] + feedListHeight + 1,
               feedListDims[1] + feedListDims[3] + 1)
-    rectangle(stdscr, feedContentDims[0] - 1, feedContentDims[1] - 1, feedContentDims[0] + feedWindowHeight+1,
+    rectangle(stdscr, feedContentDims[0]- 1, feedContentDims[1] - 1, feedContentDims[0] + feedWindowHeight + 1,
               feedContentDims[1] + feedContentDims[3] + 1)
 
     stdscr.move(2, 28)
@@ -49,22 +51,26 @@ def main(stdscr):
     while (ch != "q"):
         stdscr.refresh()
         feedListWin.move(0, 0)
-        for line in range(0, feedListDims[2] if len(feeds) > feedListDims[2] else len(feeds)):
+        #        for line in range(0, feedListDims[2] if len(feeds) > feedListDims[2] else len(feeds)):
+        #            feedListWin.move(line, 0)
+        #            if line + feedOffset == selectedFeed:
+        #                feedListWin.addnstr(feeds[feedOffset:][line], feedListDims[3], curses.A_STANDOUT)
+        #            else:
+        #                feedListWin.addnstr(feeds[feedOffset:][line], feedListDims[3])
+        for line in range(0, len(feeds)):
             feedListWin.move(line, 0)
-            if line + feedOffset == selectedFeed:
-                feedListWin.addnstr(feeds[feedOffset:][line], feedListDims[3], curses.A_STANDOUT)
+            if line == selectedFeed:
+                feedListWin.addnstr(feeds[line], feedListDims[3], curses.A_STANDOUT)
             else:
-                feedListWin.addnstr(feeds[feedOffset:][line], feedListDims[3])
+                feedListWin.addnstr(feeds[line], feedListDims[3])
 
         feedContentWin.move(0, 0)
-        #feedContentWin.addnstr(feedText[textLine * feedContentDims[3]:],
-        #                       feedContentDims[2] * feedContentDims[3] - 1) # TODO: Ist das so richtig?
-                                                                            # TODO: Der hat anscheinend probleme mit Zeilenumbrüchen
-                                                                            # Das liegt daran, dass Zeilenumbrüche die Anzahl der Zeichen pro Textfeld runtersetzen
         feedContentWin.addstr(feedText)
 
-        feedListWin.refresh()
-        feedContentWin.refresh(textLine, 0, feedContentDims[0], feedContentDims[1], feedContentDims[0]+feedWindowHeight, feedContentDims[1]+feedContentDims[3])
+        feedListWin.refresh(feedOffset, 0, feedListDims[0], feedListDims[1], feedListDims[0] + feedListHeight,
+                            feedListDims[1] + feedListDims[3])
+        feedContentWin.refresh(textLine, 0, feedContentDims[0], feedContentDims[1],
+                               feedContentDims[0] + feedWindowHeight, feedContentDims[1] + feedContentDims[3])
         ch = stdscr.getkey()
 
         if ch == "KEY_LEFT" and activeWin == feedContentWin:
@@ -79,9 +85,9 @@ def main(stdscr):
             selectedFeed -= 1
             if feedOffset > 0:
                 feedOffset -= 1
-        elif ch == "KEY_DOWN" and activeWin == feedListWin and selectedFeed < feedListDims[2]:
+        elif ch == "KEY_DOWN" and activeWin == feedListWin and selectedFeed < len(feeds)-1:
             selectedFeed += 1
-            if selectedFeed >= feedListDims[2]:
+            if selectedFeed >= feedListHeight:
                 feedOffset += 1
         elif ch == "KEY_UP" and activeWin == feedContentWin and textLine > 0:
             textLine -= 1
