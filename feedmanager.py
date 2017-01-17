@@ -4,11 +4,26 @@ import json
 from downloader import *
 from rss2json import *
 
-def getFeedList():
-    return json.load(open("feedlist.json"))["feeds"] #TODO: Error-Check
 
-def reloadFeed(name, url):
-    pass
+def getFeedList():
+    return json.load(open("feedlist.json"))["feeds"]  # TODO: Error-Check
+
+
+def reloadFeed(name, url, feedDict, sourceDict):
+    filename = "{}.json".format(name)
+    xmlFile = "{}.xml".format(name)
+    downloadCurl(url, xmlFile)
+    file = open(filename, "w")
+    file.write(dict2json(rss2dict(xmlFile)))
+    file.close()
+    feedDict["file"] = filename
+    feedlist = open("feedlist.json", "w")
+    feedlist.write(dict2json(sourceDict))
+    feedlist.close()
+
+
+pass
+
 
 def getFeed(name):
     feedlist = open("feedlist.json", "r")
@@ -17,20 +32,12 @@ def getFeed(name):
     for feed in source["feeds"]:
         if feed["name"] == name:
             if feed["file"] == None:
-                filename = "{}.json".format(name)
-                xmlFile = "{}.xml".format(name)
-                downloadCurl(feed["url"], xmlFile)
-                file = open(filename, "w")
-                file.write(dict2json(rss2dict(xmlFile)))
-                file.close()
-                feed["file"] = filename
-                feedlist = open("feedlist.json", "w")
-                feedlist.write(dict2json(source))
-                feedlist.close()
+                reloadFeed(name, feed["url"], feed, source)
                 return getFeed(name)
             return json.load(open(feed["file"]))
-    return None #TODO: Error if feed not in feedlist
+    return None  # TODO: Error if feed not in feedlist
 
-#print(getFeedList())
 
-print(getFeed("XKCD"))
+# print(getFeedList())
+
+getFeed("XKCD")
