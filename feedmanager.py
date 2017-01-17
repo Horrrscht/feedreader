@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 
 import json
-from downloader import *
-from rss2json import *
+from downloader import downloadCurl
+from rss2json import dict2json, rss2dict
 
 
 def getFeedList():
@@ -22,22 +22,18 @@ def reloadFeed(name, url, feedDict, sourceDict):
     feedlist.close()
 
 
-pass
-
-
-def getFeed(name):
+def getFeed(name, forceReload):
     feedlist = open("feedlist.json", "r")
     source = json.load(feedlist)
     feedlist.close()
     for feed in source["feeds"]:
         if feed["name"] == name:
-            if feed["file"] == None:
+            if feed["file"] == None or forceReload:
                 reloadFeed(name, feed["url"], feed, source)
-                return getFeed(name)
+                return getFeed(name, False)
             return json.load(open(feed["file"]))
     return None  # TODO: Error if feed not in feedlist
 
-
 # print(getFeedList())
 
-getFeed("XKCD")
+#getFeed("ARD")

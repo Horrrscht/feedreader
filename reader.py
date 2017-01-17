@@ -3,7 +3,7 @@
 import curses
 from curses.textpad import rectangle
 
-from feedmanager import *
+from feedmanager import getFeed, getFeedList
 import locale
 
 locale.setlocale(locale.LC_ALL, '')
@@ -17,13 +17,13 @@ keyBindTexts = [
 
 
 def formatText(item):
-    #return "{}\n\n{}\n\n{}".format((item["description"] if item["description"] != None else "No description"),
+    # return "{}\n\n{}\n\n{}".format((item["description"] if item["description"] != None else "No description"),
     #                               (item["title"] if item["title"] != None else "No title"),
     #                               (item["link"] if item["link"] != None else "No link"))
     desc = item["description"] if item["description"] != None else "No description"
     title = item["title"] if item["title"] != None else "No title"
     link = item["link"] if item["link"] != None else "No link"
-    return title + "\n\n" + desc + "\n\n" + link #TODO: Scheiß encoding-fails
+    return title + "\n\n" + desc + "\n\n" + link  # TODO: Scheiß encoding-fails
 
 
 def main(stdscr):
@@ -46,7 +46,7 @@ def main(stdscr):
 
     feedNames = [feeds["name"] for feeds in getFeedList()]
 
-    feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed])["items"]]
+    feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed], forceReload=True)["items"]]
 
     rectangle(stdscr, feedListDims[0] - 1, feedListDims[1] - 1, feedListDims[0] + feedListHeight + 1,
               feedListDims[1] + feedListDims[3] + 1)
@@ -85,13 +85,17 @@ def main(stdscr):
         elif ch == "KEY_UP" and activeWin == feedListWin and selectedFeed > 0:
             selectedItem = 0
             selectedFeed -= 1
-            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed])["items"]]
+            feedContentWin.move(0, 0)
+            feedContentWin.addstr(" " * (100 * 66 - 1))
+            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed], forceReload=True)["items"]]
             if feedOffset > 0:
                 feedOffset -= 1
         elif ch == "KEY_DOWN" and activeWin == feedListWin and selectedFeed < len(feedNames) - 1:
             selectedFeed += 1
             selectedItem = 0
-            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed])["items"]]
+            feedContentWin.move(0, 0)
+            feedContentWin.addstr(" " * (100 * 66 - 1))
+            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed], forceReload=True)["items"]]
             if selectedFeed >= feedListHeight:
                 feedOffset += 1
         elif ch == "KEY_UP" and activeWin == feedContentWin and textLine > 0:
@@ -101,11 +105,11 @@ def main(stdscr):
         elif ch == "KEY_NPAGE" and selectedItem < len(feedTexts) - 1:
             selectedItem += 1
             feedContentWin.move(0, 0)
-            feedContentWin.addstr(" "*(100*66-1))
+            feedContentWin.addstr(" " * (100 * 66 - 1))
         elif ch == "KEY_PPAGE" and selectedItem > 0:
             selectedItem -= 1
             feedContentWin.move(0, 0)
-            feedContentWin.addstr(" "*(100*66-1))
+            feedContentWin.addstr(" " * (100 * 66 - 1))
 
 
 curses.wrapper(main)
