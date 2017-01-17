@@ -8,8 +8,6 @@ def xmlValue(root, tagname):
     item = root.getElementsByTagName(tagname)
     if not item:
         return None
-    #if item == None:
-    #    return None
     return item[0].firstChild.wholeText
 
 def channelInfo(channelRoot):
