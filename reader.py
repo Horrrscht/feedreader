@@ -36,7 +36,7 @@ def main(stdscr):
 
     feedListDims = (2, 1, 20, 25)  # y,x,height,width
     feedContentDims = (
-        feedListDims[0] + feedListHeight + 3, 1, 50, 66)  # TODO: Set dimensions dynamically according to terminal size
+        feedListDims[0] + feedListHeight + 3, 1, 100, 66)  # TODO: Set dimensions dynamically according to terminal size
 
     stdscr.addstr(0, 0, "Welcome to my super-awesome feedreader")
 
@@ -69,7 +69,6 @@ def main(stdscr):
             else:
                 feedListWin.addnstr(feedNames[line].encode('utf-8'), feedListDims[3])
 
-        feedContentWin.clear()
         feedContentWin.move(0, 0)
         feedContentWin.addstr(feedTexts[selectedItem].encode('utf-8'))
 
@@ -84,11 +83,15 @@ def main(stdscr):
         elif ch == "KEY_RIGHT" and activeWin == feedListWin:
             activeWin = feedContentWin
         elif ch == "KEY_UP" and activeWin == feedListWin and selectedFeed > 0:
+            selectedItem = 0
             selectedFeed -= 1
+            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed])["items"]]
             if feedOffset > 0:
                 feedOffset -= 1
         elif ch == "KEY_DOWN" and activeWin == feedListWin and selectedFeed < len(feedNames) - 1:
             selectedFeed += 1
+            selectedItem = 0
+            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed])["items"]]
             if selectedFeed >= feedListHeight:
                 feedOffset += 1
         elif ch == "KEY_UP" and activeWin == feedContentWin and textLine > 0:
@@ -97,8 +100,12 @@ def main(stdscr):
             textLine += 1
         elif ch == "KEY_NPAGE" and selectedItem < len(feedTexts) - 1:
             selectedItem += 1
+            feedContentWin.move(0, 0)
+            feedContentWin.addstr(" "*(100*66-1))
         elif ch == "KEY_PPAGE" and selectedItem > 0:
             selectedItem -= 1
+            feedContentWin.move(0, 0)
+            feedContentWin.addstr(" "*(100*66-1))
 
 
 curses.wrapper(main)
