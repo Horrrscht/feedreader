@@ -1,0 +1,12 @@
+{
+  "feeds":[
+    {
+      "name":"ARD",
+      "file":"testdata/ardtest.json"
+    },
+    {
+      "name":"MNI",
+      "file":"testdata/mnitest.json"
+    }
+  ]
+}
