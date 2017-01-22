@@ -3,17 +3,17 @@
         {
             "url":"http://www.ard.de/home/ard/ARD_Startseite/21920/index.xml",
             "name":"ARD",
-            "file":"ARD.json"
+            "file":null
         },
         {
             "url":"https://www.mni.thm.de/startseite/news/mni-news?format=feed&type=rss",
             "name":"MNI",
-            "file":"MNI.json"
+            "file":null
         },
         {
             "url":"http://xkcd.com/rss.xml",
             "name":"XKCD",
-            "file":"XKCD.json"
+            "file":null
         }
     ]
 }
