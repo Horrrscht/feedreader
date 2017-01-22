@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 
+# Author: Birger Schulze
+
 from xml.dom import minidom
 import json
 import sys

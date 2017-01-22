@@ -1,19 +1,19 @@
 {
-  "feeds":[
-    {
-      "name":"ARD",
-      "file":null,
-      "url":"http://www.ard.de/home/ard/ARD_Startseite/21920/index.xml"
-    },
-    {
-      "name":"MNI",
-      "file":null,
-      "url":"https://www.mni.thm.de/startseite/news/mni-news?format=feed&type=rss"
-    },
-    {
-      "name":"XKCD",
-      "file":null,
-      "url":"http://xkcd.com/rss.xml"
-    }
-  ]
+    "feeds":[
+        {
+            "url":"http://www.ard.de/home/ard/ARD_Startseite/21920/index.xml",
+            "name":"ARD",
+            "file":"ARD.json"
+        },
+        {
+            "url":"https://www.mni.thm.de/startseite/news/mni-news?format=feed&type=rss",
+            "name":"MNI",
+            "file":"MNI.json"
+        },
+        {
+            "url":"http://xkcd.com/rss.xml",
+            "name":"XKCD",
+            "file":"XKCD.json"
+        }
+    ]
 }

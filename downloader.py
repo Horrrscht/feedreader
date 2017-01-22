@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 
+# Author: Birger Schulze
+
 import urllib2
 import os
 

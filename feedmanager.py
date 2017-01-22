@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 
+# Author: Birger Schulze
+
 import json
 from downloader import downloadCurl
 from rss2json import dict2json, rss2dict
