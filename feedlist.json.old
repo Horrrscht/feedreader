@@ -11,7 +11,7 @@
             "file":null
         },
         {
-            "url":"http://xkcd.com/rss.xml",
+            "url":"https://xkcd.com/rss.xml",
             "name":"XKCD",
             "file":null
         }
