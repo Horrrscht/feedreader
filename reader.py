@@ -1,4 +1,4 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 
 # Author: Birger Schulze
 
@@ -17,7 +17,6 @@ keyBindTexts = [
     "r Reload selected feed [WIP]"
 ]
 
-
 def formatText(item):
     # return "{}\n\n{}\n\n{}".format((item["description"] if item["description"] != None else "No description"),
     #                               (item["title"] if item["title"] != None else "No title"),
@@ -27,39 +26,20 @@ def formatText(item):
     link = item["link"] if item["link"] != None else "No link"
     return title + "\n\n" + desc + "\n\n" + link  # TODO: Scheiß encoding-fails
 
-
-def main(stdscr):
-    feedWindowHeight = 10
-    feedListHeight = 5
-    selectedFeed = 0
+def inputLoop(stdscr,
+              feedListWin,
+              feedContentWin,
+              activeWin,
+              feedNames,
+              feedTexts,
+              feedWindowHeight,
+              feedListHeight,
+              selectedItem,
+              selectedFeed,
+              feedListDims,
+              feedContentDims):
     feedOffset = 0
     textLine = 0
-    selectedItem = 0
-
-    feedListDims = (2, 1, 20, 25)  # y,x,height,width
-    feedContentDims = (
-        feedListDims[0] + feedListHeight + 3, 1, 100, 66)  # TODO: Set dimensions dynamically according to terminal size
-
-    stdscr.addstr(0, 0, "Welcome to my super-awesome feedreader")
-
-    feedListWin = curses.newpad(feedListDims[2], feedListDims[3])
-    feedContentWin = curses.newpad(feedContentDims[2], feedContentDims[3])
-    activeWin = feedContentWin
-
-    feedNames = [feeds["name"] for feeds in getFeedList()]
-
-    feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed], forceReload=True)["items"]]
-
-    rectangle(stdscr, feedListDims[0] - 1, feedListDims[1] - 1, feedListDims[0] + feedListHeight + 1,
-              feedListDims[1] + feedListDims[3] + 1)
-    rectangle(stdscr, feedContentDims[0] - 1, feedContentDims[1] - 1, feedContentDims[0] + feedWindowHeight + 1,
-              feedContentDims[1] + feedContentDims[3] + 1)
-
-    stdscr.move(2, feedListDims[3] + 4)
-    for line in range(0, len(keyBindTexts)):
-        stdscr.addstr(keyBindTexts[line])
-        stdscr.move(3 + line, feedListDims[3] + 4)
-
     ch = ""
     while (ch != "q"):
         stdscr.refresh()
@@ -67,19 +47,28 @@ def main(stdscr):
         for line in range(0, len(feedNames)):
             feedListWin.move(line, 0)
             if line == selectedFeed:
-                feedListWin.addnstr(feedNames[line].encode('utf-8'), feedListDims[3], curses.A_STANDOUT)
+                feedListWin.addnstr(feedNames[line].encode('utf-8'),
+                                    feedListDims[3],
+                                    curses.A_STANDOUT)
             else:
-                feedListWin.addnstr(feedNames[line].encode('utf-8'), feedListDims[3])
-
+                feedListWin.addnstr(feedNames[line].encode('utf-8'),
+                                    feedListDims[3])
         feedContentWin.move(0, 0)
         feedContentWin.addstr(feedTexts[selectedItem].encode('utf-8'))
 
-        feedListWin.refresh(feedOffset, 0, feedListDims[0], feedListDims[1], feedListDims[0] + feedListHeight,
+        feedListWin.refresh(feedOffset,
+                            0,
+                            feedListDims[0],
+                            feedListDims[1],
+                            feedListDims[0] + feedListHeight,
                             feedListDims[1] + feedListDims[3])
-        feedContentWin.refresh(textLine, 0, feedContentDims[0], feedContentDims[1],
-                               feedContentDims[0] + feedWindowHeight, feedContentDims[1] + feedContentDims[3])
+        feedContentWin.refresh(textLine,
+                               0,
+                               feedContentDims[0],
+                               feedContentDims[1],
+                               feedContentDims[0] + feedWindowHeight,
+                               feedContentDims[1] + feedContentDims[3])
         ch = stdscr.getkey()
-
         if ch == "KEY_LEFT" and activeWin == feedContentWin:
             activeWin = feedListWin
         elif ch == "KEY_RIGHT" and activeWin == feedListWin:
@@ -89,7 +78,8 @@ def main(stdscr):
             selectedFeed -= 1
             feedContentWin.move(0, 0)
             feedContentWin.addstr(" " * (100 * 66 - 1))
-            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed], forceReload=True)["items"]]
+            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed],
+                                                              forceReload=True)["items"]]
             if feedOffset > 0:
                 feedOffset -= 1
         elif ch == "KEY_DOWN" and activeWin == feedListWin and selectedFeed < len(feedNames) - 1:
@@ -97,7 +87,8 @@ def main(stdscr):
             selectedItem = 0
             feedContentWin.move(0, 0)
             feedContentWin.addstr(" " * (100 * 66 - 1))
-            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed], forceReload=True)["items"]]
+            feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed],
+                                                              forceReload=True)["items"]]
             if selectedFeed >= feedListHeight:
                 feedOffset += 1
         elif ch == "KEY_UP" and activeWin == feedContentWin and textLine > 0:
@@ -114,4 +105,50 @@ def main(stdscr):
             feedContentWin.addstr(" " * (100 * 66 - 1))
 
 
-curses.wrapper(main)
+def main(stdscr):
+    stdscr.addstr(0, 0, "Welcome to my super-awesome feedreader")
+    feedWindowHeight = 10
+    feedListHeight = 5
+    selectedItem = 0
+    selectedFeed = 0
+    feedListDims = (2, 1, 20, 25)  # y,x,height,width
+    feedContentDims = (feedListDims[0] + feedListHeight + 3,
+                       1,
+                       100,
+                       66)  # TODO: Set dimensions dynamically according to terminal size
+    feedListWin = curses.newpad(feedListDims[2], feedListDims[3])
+    feedContentWin = curses.newpad(feedContentDims[2], feedContentDims[3])
+    activeWin = feedContentWin
+    feedNames = [feeds["name"] for feeds in getFeedList()]
+    feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed],
+                                                      forceReload=True)["items"]]
+    rectangle(stdscr,
+              feedListDims[0] - 1,
+              feedListDims[1] - 1,
+              feedListDims[0] + feedListHeight + 1,
+              feedListDims[1] + feedListDims[3] + 1)
+    rectangle(stdscr,
+              feedContentDims[0] - 1,
+              feedContentDims[1] - 1,
+              feedContentDims[0] + feedWindowHeight + 1,
+              feedContentDims[1] + feedContentDims[3] + 1)
+    stdscr.move(2, feedListDims[3] + 4)
+    for line in range(0, len(keyBindTexts)):
+        stdscr.addstr(keyBindTexts[line])
+        stdscr.move(3 + line, feedListDims[3] + 4)
+    inputLoop(stdscr,
+              feedListWin,
+              feedContentWin,
+              activeWin,
+              feedNames,
+              feedTexts,
+              feedWindowHeight,
+              feedListHeight,
+              selectedItem,
+              selectedFeed,
+              feedListDims,
+              feedContentDims
+    )
+
+if __name__ == "__main__":
+    curses.wrapper(main)
