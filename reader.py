@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # Author: Birger Schulze
@@ -81,7 +82,7 @@ def inputLoop(stdscr,
             feedContentWin.move(0, 0)
             feedContentWin.addstr(" " * (100 * 66 - 1))
             feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed],
-                                                              forceReload=True)["items"]]
+                                                              forceReload=False)["items"]]
             if feedOffset > 0:
                 feedOffset -= 1
         elif ch == "KEY_DOWN" and activeWin == feedListWin and selectedFeed < len(feedNames) - 1:
@@ -90,7 +91,7 @@ def inputLoop(stdscr,
             feedContentWin.move(0, 0)
             feedContentWin.addstr(" " * (100 * 66 - 1))
             feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed],
-                                                              forceReload=True)["items"]]
+                                                              forceReload=False)["items"]]
             if selectedFeed >= feedListHeight:
                 feedOffset += 1
         elif ch == "KEY_UP" and activeWin == feedContentWin and textLine > 0:
@@ -105,7 +106,6 @@ def inputLoop(stdscr,
             selectedItem -= 1
             feedContentWin.move(0, 0)
             feedContentWin.addstr(" " * (100 * 66 - 1))
-
 
 def main(stdscr):
     stdscr.addstr(0, 0, "Welcome to my super-awesome feedreader")
