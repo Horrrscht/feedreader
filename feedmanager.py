@@ -8,8 +8,11 @@ from rss2json import dict2json, rss2dict
 
 
 def getFeedList():
-    return json.load(open("feedlist.json"))["feeds"]  # TODO: Error-Check
-
+    try:
+        with open("feedlist.json") as file:
+            return json.load(file)["feeds"]  # TODO: Error-Check
+    except IOError:
+        return None
 
 def reloadFeed(name, url, feedDict, sourceDict):
     filename = "{}.json".format(name)

@@ -2,6 +2,8 @@
 
 # Author: Birger Schulze
 
+import sys
+
 import curses
 from curses.textpad import rectangle
 
@@ -119,7 +121,9 @@ def main(stdscr):
     feedListWin = curses.newpad(feedListDims[2], feedListDims[3])
     feedContentWin = curses.newpad(feedContentDims[2], feedContentDims[3])
     activeWin = feedContentWin
-    feedNames = [feeds["name"] for feeds in getFeedList()]
+    feedList = getFeedList()
+    assert (feedList != None), "Error: Could not find file feedlist.json"
+    feedNames = [feeds["name"] for feeds in feedList]
     feedTexts = [formatText(item) for item in getFeed(feedNames[selectedFeed],
                                                       forceReload=True)["items"]]
     rectangle(stdscr,
