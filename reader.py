@@ -21,9 +21,6 @@ keyBindTexts = [
 ]
 
 def formatText(item):
-    # return "{}\n\n{}\n\n{}".format((item["description"] if item["description"] != None else "No description"),
-    #                               (item["title"] if item["title"] != None else "No title"),
-    #                               (item["link"] if item["link"] != None else "No link"))
     desc = item["description"] if item["description"] != None else "No description"
     title = item["title"] if item["title"] != None else "No title"
     link = item["link"] if item["link"] != None else "No link"
